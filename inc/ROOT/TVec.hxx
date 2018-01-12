@@ -48,16 +48,6 @@ private:
       if (fVector.empty())
          throw std::runtime_error("This TVec instance cannot be modified");
    }
-   TVec<int> GetTVecInt()
-   {
-      TVec<int> newTVec;
-      auto &newVec = newTVec.fVector;
-      const auto vsize = size();
-      newVec.resize(vsize);
-      newTVec.fArray = newVec.data();
-      newTVec.fArraySize = vsize;
-      return newTVec;
-   }
 
 public:
    // This constructor is not documented as it is to be considered "internal"
@@ -70,6 +60,9 @@ public:
 
    /// Construct from initialiser list
    TVec(std::initializer_list<T> init) : fVector(init), fArray(fVector.data()), fArraySize(fVector.size()){};
+
+   /// Construct from a size
+   TVec(size_type size) : fVector(size), fVector.data(), fArraySize(fVector.size()){};
 
    /// Default constructor
    TVec(){};
@@ -184,7 +177,7 @@ public:
    template <typename V>
    TVec<int> operator>(const V &c)
    {
-      auto newTVec = GetTVecInt();
+      TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
       for (const auto i : ROOT::TSeq<size_type>(newTVec.size()))
          newVec[i] = fArray[i] > c;
@@ -194,7 +187,7 @@ public:
    template <typename V>
    TVec<int> operator>=(const V &c)
    {
-      auto newTVec = GetTVecInt();
+      TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
       for (const auto i : ROOT::TSeq<size_type>(newTVec.size()))
          newVec[i] = fArray[i] >= c;
@@ -204,7 +197,7 @@ public:
    template <typename V>
    TVec<int> operator<(const V &c)
    {
-      auto newTVec = GetTVecInt();
+      TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
       for (const auto i : ROOT::TSeq<size_type>(newTVec.size()))
          newVec[i] = fArray[i] < c;
@@ -214,7 +207,7 @@ public:
    template <typename V>
    TVec<int> operator<=(const V &c)
    {
-      auto newTVec = GetTVecInt();
+      TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
       for (const auto i : ROOT::TSeq<size_type>(newTVec.size()))
          newVec[i] = fArray[i] <= c;
@@ -224,7 +217,7 @@ public:
    template <typename V>
    TVec<int> operator==(const V &c)
    {
-      auto newTVec = GetTVecInt();
+      TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
       for (const auto i : ROOT::TSeq<size_type>(newTVec.size()))
          newVec[i] = fArray[i] == c;
@@ -234,7 +227,7 @@ public:
    template <typename V>
    TVec<int> operator!=(const V &c)
    {
-      auto newTVec = GetTVecInt();
+      TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
       for (const auto i : ROOT::TSeq<size_type>(newTVec.size()))
          newVec[i] = fArray[i] != c;
