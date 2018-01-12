@@ -23,6 +23,7 @@ namespace VecOps {
 
 template <typename T>
 class TVec {
+   template<typename TT> friend class TVec;
 public:
    // The same types of the vector
    using value_type = typename std::vector<T>::value_type;
@@ -81,10 +82,6 @@ public:
       fArraySize = v.size();
       fVector.resize(fArraySize);
       fArray = fVector.data();
-
-      cout << fArraySize << " " << fVector.size() << endl;
-      cout << dataArray[0] << " " << dataArray[1] << " " << dataArray[2];
-
       memcpy(&fVector[0], dataArray, fArraySize * sizeof(T));
    }
 
