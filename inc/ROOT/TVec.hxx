@@ -65,7 +65,10 @@ public:
    /*! \endcond */
 
    /// Construct starting from an vector
-   TVec(const std::vector<T> vec) : fVector(vec), fArray(fVector.data()), fArraySize(vec.size()){};
+   TVec(const std::vector<T> vec) : fVector(vec), fArray(fVector.data()), fArraySize(fVector.size()){};
+
+   /// Construct from initialiser list
+   TVec(std::initializer_list<T> init) : fVector(init), fArray(fVector.data()), fArraySize(fVector.size()){};
 
    /// Default constructor
    TVec(){};
