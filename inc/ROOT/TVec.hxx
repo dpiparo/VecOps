@@ -67,15 +67,18 @@ public:
    /// Default constructor
    TVec(){};
 
-   /// Copy constructor. Memcopy is used for efficiency
-   TVec(const TVec<T> &v)
+   /// Copy constructor. Cast of contained types is performed if needed.
+   template<typename V>
+   TVec(const TVec<V> &v)
    {
-      auto dataArray = v.data();
-
+      auto vData = v.data();
       fArraySize = v.size();
       fVector.resize(fArraySize);
       fArray = fVector.data();
-      memcpy((T*)fArray, dataArray, fArraySize * sizeof(T));
+      // This works only with pods
+      //auto dataArray = v.data();
+      //memcpy((T*)fArray, dataArray, fArraySize * sizeof(T));
+      std::copy(vData, vData + fArraySize, fVector.begin());
    }
 
    // Here all the vector methods will be added
@@ -139,38 +142,41 @@ public:
    */
    ///@{
    template <typename V>
-   TVec<T> operator+(const V &c)
+   TVec<typename std::common_type<T,V>::type> operator+(const V &c)
    {
-      TVec<T> newTVec(*this);
+      TVec<typename std::common_type<T,V>::type> newTVec(*this);
       // polish once iterators are there!
-      for (auto &&e : newTVec.fVector)
+      for (auto &&e : newTVec.fVector) {
          e += c;
+      }
       return newTVec;
    }
 
    template <typename V>
-   TVec<T> operator-(const V &c)
+   TVec<typename std::common_type<T,V>::type> operator-(const V &c)
    {
       return *this + (-c);
    }
 
    template <typename V>
-   TVec<T> operator*(const V &c)
+   TVec<typename std::common_type<T,V>::type> operator*(const V &c)
    {
-      TVec<T> newTVec(*this);
+      TVec<typename std::common_type<T,V>::type> newTVec(*this);
       // polish once iterators are there!
-      for (auto &&e : newTVec.fVector)
+      for (auto &&e : newTVec.fVector) {
          e *= c;
+      }
       return newTVec;
    }
 
    template <typename V>
-   TVec<T> operator/(const V &c)
+   TVec<typename std::common_type<T,V>::type> operator/(const V &c)
    {
-      TVec<T> newTVec(*this);
+      TVec<typename std::common_type<T,V>::type> newTVec(*this);
       // polish once iterators are there!
-      for (auto &&e : newTVec.fVector)
+      for (auto &&e : newTVec.fVector) {
          e /= c;
+      }
       return newTVec;
    }
 
@@ -179,8 +185,9 @@ public:
    {
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size()))
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
          newVec[i] = fArray[i] > c;
+      }
       return newTVec;
    }
 
@@ -189,8 +196,9 @@ public:
    {
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size()))
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
          newVec[i] = fArray[i] >= c;
+      }
       return newTVec;
    }
 
@@ -199,8 +207,9 @@ public:
    {
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size()))
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
          newVec[i] = fArray[i] < c;
+      }
       return newTVec;
    }
 
@@ -209,8 +218,9 @@ public:
    {
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size()))
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
          newVec[i] = fArray[i] <= c;
+      }
       return newTVec;
    }
 
@@ -219,8 +229,9 @@ public:
    {
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size()))
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
          newVec[i] = fArray[i] == c;
+      }
       return newTVec;
    }
 
@@ -229,8 +240,9 @@ public:
    {
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size()))
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
          newVec[i] = fArray[i] != c;
+      }
       return newTVec;
    }
 
