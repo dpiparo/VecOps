@@ -62,7 +62,7 @@ public:
    TVec(std::initializer_list<T> init) : fVector(init), fArray(fVector.data()), fArraySize(fVector.size()){};
 
    /// Construct from a size
-   TVec(size_type size) : fVector(size), fVector.data(), fArraySize(fVector.size()){};
+   TVec(size_type size) : fVector(size), fArray(fVector.data()), fArraySize(fVector.size()){};
 
    /// Default constructor
    TVec(){};
@@ -75,7 +75,7 @@ public:
       fArraySize = v.size();
       fVector.resize(fArraySize);
       fArray = fVector.data();
-      memcpy(&fVector[0], dataArray, fArraySize * sizeof(T));
+      memcpy((T*)fArray, dataArray, fArraySize * sizeof(T));
    }
 
    // Here all the vector methods will be added
