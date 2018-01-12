@@ -13,9 +13,44 @@
 
 #include <TTreeReaderArray.h>
 
+#include <numeric> // for inner_product
+#include <strstream>
+#include <type_traits>
 #include <vector>
 
 namespace ROOT {
+
+namespace Internal {
+
+namespace VecOps {
+
+template <typename...>
+struct TIsOneOf {
+    static constexpr bool value = false;
+};
+
+template <typename F, typename S, typename... T>
+struct TIsOneOf<F, S, T...> {
+    static constexpr bool value =
+        std::is_same<F, S>::value || TIsOneOf<F, T...>::value;
+};
+
+template<typename T>
+struct TIsChar {
+    static constexpr bool value = TIsOneOf<typename std::decay<T>::type, char, signed char, unsigned char, wchar_t, char16_t, char32_t> ::value;
+};
+
+void CheckSizes(size_t s0, size_t s1, const char *opName)
+{
+   if (s0 != s1) {
+      std::stringstream err;
+      err << "Cannot perform operation " << opName << ". The size of the arrays differ (" << s0 << " and " << s1 << ")";
+      throw std::runtime_error(err.str());
+   }
+}
+} // End of VecOps NS
+
+} // End of Internal NS
 
 namespace Experimental {
 
@@ -23,7 +58,9 @@ namespace VecOps {
 
 template <typename T>
 class TVec {
-   template<typename TT> friend class TVec;
+   template <typename TT>
+   friend class TVec;
+
 public:
    // The same types of the vector
    using value_type = typename std::vector<T>::value_type;
@@ -68,7 +105,7 @@ public:
    TVec(){};
 
    /// Copy constructor. Cast of contained types is performed if needed.
-   template<typename V>
+   template <typename V>
    TVec(const TVec<V> &v)
    {
       auto vData = v.data();
@@ -76,8 +113,8 @@ public:
       fVector.resize(fArraySize);
       fArray = fVector.data();
       // This works only with pods
-      //auto dataArray = v.data();
-      //memcpy((T*)fArray, dataArray, fArraySize * sizeof(T));
+      // auto dataArray = v.data();
+      // memcpy((T*)fArray, dataArray, fArraySize * sizeof(T));
       std::copy(vData, vData + fArraySize, fVector.begin());
    }
 
@@ -142,10 +179,9 @@ public:
    */
    ///@{
    template <typename V>
-   TVec<typename std::common_type<T,V>::type> operator+(const V &c)
+   TVec<typename std::common_type<T, V>::type> operator+(const V &c)
    {
-      TVec<typename std::common_type<T,V>::type> newTVec(*this);
-      // polish once iterators are there!
+      TVec<typename std::common_type<T, V>::type> newTVec(*this);
       for (auto &&e : newTVec.fVector) {
          e += c;
       }
@@ -153,16 +189,15 @@ public:
    }
 
    template <typename V>
-   TVec<typename std::common_type<T,V>::type> operator-(const V &c)
+   TVec<typename std::common_type<T, V>::type> operator-(const V &c)
    {
       return *this + (-c);
    }
 
    template <typename V>
-   TVec<typename std::common_type<T,V>::type> operator*(const V &c)
+   TVec<typename std::common_type<T, V>::type> operator*(const V &c)
    {
-      TVec<typename std::common_type<T,V>::type> newTVec(*this);
-      // polish once iterators are there!
+      TVec<typename std::common_type<T, V>::type> newTVec(*this);
       for (auto &&e : newTVec.fVector) {
          e *= c;
       }
@@ -170,10 +205,9 @@ public:
    }
 
    template <typename V>
-   TVec<typename std::common_type<T,V>::type> operator/(const V &c)
+   TVec<typename std::common_type<T, V>::type> operator/(const V &c)
    {
-      TVec<typename std::common_type<T,V>::type> newTVec(*this);
-      // polish once iterators are there!
+      TVec<typename std::common_type<T, V>::type> newTVec(*this);
       for (auto &&e : newTVec.fVector) {
          e /= c;
       }
@@ -249,11 +283,151 @@ public:
    ///@}
 
    /** @name Math Operators with TVecs
-    *  Math operators involving TVec
+    *  Math operators involving TVecs
    */
+   template <typename V>
+   TVec<typename std::common_type<T, V>::type> operator+(const TVec<V> &v)
+   {
+      ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "+");
+      TVec<typename std::common_type<T, V>::type> newTVec(*this);
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+         newTVec.fVector[i] += v.fArray[i];
+      }
+      return newTVec;
+   }
+
+   template <typename V>
+   TVec<typename std::common_type<T, V>::type> operator-(const TVec<V> &v)
+   {
+      ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "-");
+      TVec<typename std::common_type<T, V>::type> newTVec(*this);
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+         newTVec.fVector[i] -= v.fArray[i];
+      }
+      return newTVec;
+   }
+
+   template <typename V>
+   TVec<typename std::common_type<T, V>::type> operator*(const TVec<V> &v)
+   {
+      ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "*");
+      TVec<typename std::common_type<T, V>::type> newTVec(*this);
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+         newTVec.fVector[i] *= v.fArray[i];
+      }
+      return newTVec;
+   }
+
+   template <typename V>
+   TVec<typename std::common_type<T, V>::type> operator/(const TVec<V> &v)
+   {
+      ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "/");
+      TVec<typename std::common_type<T, V>::type> newTVec(*this);
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+         newTVec.fVector[i] /= v.fArray[i];
+      }
+      return newTVec;
+   }
+
+   template <typename V>
+   TVec<int> operator>(const TVec<V> &v)
+   {
+      ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), ">");
+      TVec<int> newTVec(fArraySize);
+      auto &newVec = newTVec.fVector;
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+         newVec[i] = fArray[i] > v.fArray[i];
+      }
+      return newTVec;
+   }
+
+   template <typename V>
+   TVec<int> operator>=(const TVec<V> &v)
+   {
+      ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), ">=");
+      TVec<int> newTVec(fArraySize);
+      auto &newVec = newTVec.fVector;
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+         newVec[i] = fArray[i] >= v.fArray[i];
+      }
+      return newTVec;
+   }
+
+   template <typename V>
+   TVec<int> operator<(const TVec<V> &v)
+   {
+      ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "<");
+      TVec<int> newTVec(fArraySize);
+      auto &newVec = newTVec.fVector;
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+         newVec[i] = fArray[i] < v.fArray[i];
+      }
+      return newTVec;
+   }
+
+   template <typename V>
+   TVec<int> operator<=(const TVec<V> &v)
+   {
+      ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "<=");
+      TVec<int> newTVec(fArraySize);
+      auto &newVec = newTVec.fVector;
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+         newVec[i] = fArray[i] <= v.fArray[i];
+      }
+      return newTVec;
+   }
+
+   template <typename V>
+   TVec<int> operator==(const TVec<V> &v)
+   {
+      ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "==");
+      TVec<int> newTVec(fArraySize);
+      auto &newVec = newTVec.fVector;
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+         newVec[i] = fArray[i] == v.fArray[i];
+      }
+      return newTVec;
+   }
+
+   template <typename V>
+   TVec<int> operator!=(const TVec<V> &v)
+   {
+      ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "!=");
+      TVec<int> newTVec(fArraySize);
+      auto &newVec = newTVec.fVector;
+      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+         newVec[i] = fArray[i] != v.fArray[i];
+      }
+      return newTVec;
+   }
    ///@{
    ///@}
 };
+
+/// Inner product
+template <typename T, typename V>
+typename std::common_type<T, V>::type Dot (const TVec<T> v0, const TVec<V> v1)
+{
+   return std::inner_product(v0.data(), v0.data()+v0.size(), v1.data(), typename std::common_type<T, V>::type (0));
+}
+
+template<class T>
+ostream& operator<<( ostream& os, const TVec<T>& v )
+{
+   // In order to print properly, convert to 64 bit int if this is a char
+   using Print_t = typename std::conditional<ROOT::Internal::VecOps::TIsChar<T>::value, Long64_t, T>::type;
+   os << "{ ";
+   auto size = v.size();
+   if (size) {
+      auto data = v.data();
+      for (auto i : ROOT::TSeq<typename TVec<T>::size_type>(size-1)) {
+         os << (Print_t) data[i] << ", ";
+      }
+   os << (Print_t) data[size-1];
+   }
+   os << " }";
+   return os;
+}
 
 } // End of VecOps NS
 
@@ -261,11 +435,15 @@ public:
 
 } // End of ROOT NS
 
+#include <string>
+
 namespace cling {
 template <typename T>
 inline std::string printValue(ROOT::Experimental::VecOps::TVec<T> *tvec)
 {
-   return printValue((std::vector<T> *)tvec);
+   std::stringstream ss;
+   ss << *tvec;
+   return ss.str();
 }
 
 } // namespace cling
