@@ -83,6 +83,11 @@ void intro()
       TVec<float> v31{0, 1, 2, 3};
       auto res3 = Dot(v30, v31);
       std::cout << res3 << std::endl;
+
+      std::cout << "Square root of a TVec:" << std::endl;
+      TVec<float> v40{0, 1, 2, 3};
+      auto res4 = sqrt(v40);
+      std::cout << res4 << std::endl;
    }
 
    {
