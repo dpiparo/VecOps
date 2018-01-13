@@ -11,6 +11,7 @@
 #ifndef ROOT_TVEC
 #define ROOT_TVEC
 
+#include <ROOT/TSeq.hxx>
 #include <TTreeReaderArray.h>
 
 #include <numeric> // for inner_product
@@ -56,10 +57,15 @@ namespace Experimental {
 
 namespace VecOps {
 
+template <typename T> class TVec;
+template <typename T> TVec<double> sqrt(const TVec<T>&);
+
 template <typename T>
 class TVec {
-   template <typename TT>
+   template <typename V>
    friend class TVec;
+   template<typename V>
+   friend TVec<double> sqrt(const TVec<V>&);
 
 public:
    // The same types of the vector
@@ -89,7 +95,10 @@ private:
 public:
    // This constructor is not documented as it is to be considered "internal"
    /*! \cond PRIVATE */
-   TVec(const TTreeReaderArray<T> &ttra) : fArray(ttra[0]), fArraySize(ttra.GetSize()){};
+   TVec(const TTreeReaderArray<T> &ttra) : fArraySize(ttra.GetSize()) {
+      if (0 == fArraySize) return;
+      fArray = (T*) &(ttra[0]);
+   }
    /*! \endcond */
 
    /// Construct starting from an vector
@@ -179,7 +188,7 @@ public:
    */
    ///@{
    template <typename V>
-   TVec<typename std::common_type<T, V>::type> operator+(const V &c)
+   TVec<typename std::common_type<T, V>::type> operator+(const V &c) const
    {
       TVec<typename std::common_type<T, V>::type> newTVec(*this);
       for (auto &&e : newTVec.fVector) {
@@ -189,13 +198,13 @@ public:
    }
 
    template <typename V>
-   TVec<typename std::common_type<T, V>::type> operator-(const V &c)
+   TVec<typename std::common_type<T, V>::type> operator-(const V &c) const
    {
       return *this + (-c);
    }
 
    template <typename V>
-   TVec<typename std::common_type<T, V>::type> operator*(const V &c)
+   TVec<typename std::common_type<T, V>::type> operator*(const V &c) const
    {
       TVec<typename std::common_type<T, V>::type> newTVec(*this);
       for (auto &&e : newTVec.fVector) {
@@ -205,7 +214,7 @@ public:
    }
 
    template <typename V>
-   TVec<typename std::common_type<T, V>::type> operator/(const V &c)
+   TVec<typename std::common_type<T, V>::type> operator/(const V &c) const
    {
       TVec<typename std::common_type<T, V>::type> newTVec(*this);
       for (auto &&e : newTVec.fVector) {
@@ -215,66 +224,66 @@ public:
    }
 
    template <typename V>
-   TVec<int> operator>(const V &c)
+   TVec<int> operator>(const V &c) const
    {
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newVec[i] = fArray[i] > c;
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<int> operator>=(const V &c)
+   TVec<int> operator>=(const V &c) const
    {
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newVec[i] = fArray[i] >= c;
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<int> operator<(const V &c)
+   TVec<int> operator<(const V &c) const
    {
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newVec[i] = fArray[i] < c;
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<int> operator<=(const V &c)
+   TVec<int> operator<=(const V &c) const
    {
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newVec[i] = fArray[i] <= c;
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<int> operator==(const V &c)
+   TVec<int> operator==(const V &c) const
    {
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newVec[i] = fArray[i] == c;
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<int> operator!=(const V &c)
+   TVec<int> operator!=(const V &c) const
    {
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newVec[i] = fArray[i] != c;
       }
       return newTVec;
@@ -285,124 +294,140 @@ public:
    /** @name Math Operators with TVecs
     *  Math operators involving TVecs
    */
+   ///@{
    template <typename V>
-   TVec<typename std::common_type<T, V>::type> operator+(const TVec<V> &v)
+   TVec<typename std::common_type<T, V>::type> operator+(const TVec<V> &v) const
    {
       ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "+");
       TVec<typename std::common_type<T, V>::type> newTVec(*this);
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newTVec.fVector[i] += v.fArray[i];
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<typename std::common_type<T, V>::type> operator-(const TVec<V> &v)
+   TVec<typename std::common_type<T, V>::type> operator-(const TVec<V> &v) const
    {
       ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "-");
       TVec<typename std::common_type<T, V>::type> newTVec(*this);
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newTVec.fVector[i] -= v.fArray[i];
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<typename std::common_type<T, V>::type> operator*(const TVec<V> &v)
+   TVec<typename std::common_type<T, V>::type> operator*(const TVec<V> &v) const
    {
       ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "*");
       TVec<typename std::common_type<T, V>::type> newTVec(*this);
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newTVec.fVector[i] *= v.fArray[i];
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<typename std::common_type<T, V>::type> operator/(const TVec<V> &v)
+   TVec<typename std::common_type<T, V>::type> operator/(const TVec<V> &v) const
    {
       ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "/");
       TVec<typename std::common_type<T, V>::type> newTVec(*this);
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newTVec.fVector[i] /= v.fArray[i];
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<int> operator>(const TVec<V> &v)
+   TVec<int> operator>(const TVec<V> &v) const
    {
       ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), ">");
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newVec[i] = fArray[i] > v.fArray[i];
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<int> operator>=(const TVec<V> &v)
+   TVec<int> operator>=(const TVec<V> &v) const
    {
       ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), ">=");
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newVec[i] = fArray[i] >= v.fArray[i];
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<int> operator<(const TVec<V> &v)
+   TVec<int> operator<(const TVec<V> &v) const
    {
       ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "<");
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newVec[i] = fArray[i] < v.fArray[i];
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<int> operator<=(const TVec<V> &v)
+   TVec<int> operator<=(const TVec<V> &v) const
    {
       ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "<=");
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newVec[i] = fArray[i] <= v.fArray[i];
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<int> operator==(const TVec<V> &v)
+   TVec<int> operator==(const TVec<V> &v) const
    {
       ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "==");
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newVec[i] = fArray[i] == v.fArray[i];
       }
       return newTVec;
    }
 
    template <typename V>
-   TVec<int> operator!=(const TVec<V> &v)
+   TVec<int> operator!=(const TVec<V> &v) const
    {
       ROOT::Internal::VecOps::CheckSizes(fArraySize, v.size(), "!=");
       TVec<int> newTVec(fArraySize);
       auto &newVec = newTVec.fVector;
-      for (const auto i : ROOT::TSeq<size_type>(newTVec.size())) {
+      for (auto i : ROOT::TSeq<size_type>(fArraySize)) {
          newVec[i] = fArray[i] != v.fArray[i];
       }
       return newTVec;
    }
-   ///@{
    ///@}
 };
+
+/** @name Math Functions
+ *  Math functions on TVecs
+*/
+///@{
+template<typename T>
+TVec<double> sqrt(const TVec<T>& v)
+{
+   TVec<double> newTVec(v.size());
+   auto &newVec = newTVec.fVector;
+   for (const auto i : ROOT::TSeq<typename TVec<T>::size_type>(newTVec.size())) {
+      newVec[i] = ::sqrt(v.fArray[i]);
+   }
+   return newTVec;
+}
+///@}
 
 /// Inner product
 template <typename T, typename V>
@@ -412,7 +437,7 @@ typename std::common_type<T, V>::type Dot (const TVec<T> v0, const TVec<V> v1)
 }
 
 template<class T>
-ostream& operator<<( ostream& os, const TVec<T>& v )
+std::ostream& operator<<( std::ostream& os, const TVec<T>& v )
 {
    // In order to print properly, convert to 64 bit int if this is a char
    using Print_t = typename std::conditional<ROOT::Internal::VecOps::TIsChar<T>::value, Long64_t, T>::type;
