@@ -1,0 +1,15 @@
+add_executable(intro intro.C)
+target_link_libraries(intro VecOps ${ROOT_LIBRARIES})
+target_include_directories(intro PUBLIC ${CMAKE_SOURCE_DIR}/inc ${ROOT_INCLUDE_DIRS})
+
+function (add_google_test testname source)
+	add_executable(${testname} ${source})
+	target_link_libraries(${testname} VecOps ${ROOT_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+	target_include_directories(${testname} PUBLIC ${CMAKE_SOURCE_DIR}/src ${ROOT_INCLUDE_DIRS})
+	if (EXTERNAL_GTEST)
+		add_dependencies(${testname} googletest)
+	endif()
+	add_test(${testname} ${testname})
+endfunction()
+
+add_google_test(vecops_unit vecops_unit.C)
