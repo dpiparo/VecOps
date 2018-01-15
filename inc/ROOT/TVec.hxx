@@ -102,7 +102,7 @@ public:
    /*! \endcond */
 
    /// Construct starting from a vector
-   TVec(const std::vector<T> vec) : fVector(vec), fArray(fVector.data()), fArraySize(fVector.size()){};
+   TVec(const std::vector<T> &vec) : fVector(vec), fArray(fVector.data()), fArraySize(fVector.size()){};
 
    /// Construct from initializer list
    TVec(std::initializer_list<T> init) : fVector(init), fArray(fVector.data()), fArraySize(fVector.size()){};
