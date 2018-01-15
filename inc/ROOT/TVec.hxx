@@ -115,6 +115,8 @@ public:
    TVec(){};
 
    /// Copy constructor. Cast of contained types is performed if needed.
+   TVec(const TVec<T> &v) : fVector(v.fVector), fArray(fVector.data()), fArraySize(fVector.size()) {}
+
    template <typename V>
    TVec(const TVec<V> &v)
    {
@@ -126,6 +128,13 @@ public:
       // auto dataArray = v.data();
       // memcpy((T*)fArray, dataArray, fArraySize * sizeof(T));
       std::copy(vData, vData + fArraySize, fVector.begin());
+   }
+
+   /// Move constructor
+   TVec(TVec<T> &&v) : fVector(std::move(v.fVector)), fArray(fVector.data()), fArraySize(fVector.size())
+   {
+      v.fArray = v.fVector.data();
+      v.fArraySize = v.fVector.size();
    }
 
    // Here all the vector methods will be added
