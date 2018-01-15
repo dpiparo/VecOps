@@ -45,7 +45,7 @@ void CheckSizes(size_t s0, size_t s1, const char *opName)
 {
    if (s0 != s1) {
       std::stringstream err;
-      err << "Cannot perform operation " << opName << ". The size of the arrays differ (" << s0 << " and " << s1 << ")";
+      err << "Cannot perform operation " << opName << ". The array sizes differ (" << s0 << " and " << s1 << ")";
       throw std::runtime_error(err.str());
    }
 }
@@ -101,10 +101,10 @@ public:
    }
    /*! \endcond */
 
-   /// Construct starting from an vector
+   /// Construct starting from a vector
    TVec(const std::vector<T> vec) : fVector(vec), fArray(fVector.data()), fArraySize(fVector.size()){};
 
-   /// Construct from initialiser list
+   /// Construct from initializer list
    TVec(std::initializer_list<T> init) : fVector(init), fArray(fVector.data()), fArraySize(fVector.size()){};
 
    /// Construct from a size
