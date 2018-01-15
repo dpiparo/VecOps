@@ -179,7 +179,7 @@ public:
    void emplace_back(Args &&... args)
    {
       void CheckOwnership();
-      fVector.emplace_back(std::move(args...));
+      fVector.emplace_back(std::forward<Args>(args)...);
    }
    ///@}
 
