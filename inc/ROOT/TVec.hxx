@@ -15,7 +15,7 @@
 #include <TTreeReaderArray.h>
 
 #include <numeric> // for inner_product
-#include <strstream>
+#include <sstream>
 #include <type_traits>
 #include <vector>
 
