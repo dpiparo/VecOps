@@ -95,10 +95,7 @@ private:
 public:
    // This constructor is not documented as it is to be considered "internal"
    /*! \cond PRIVATE */
-   TVec(const TTreeReaderArray<T> &ttra) : fArraySize(ttra.GetSize()) {
-      if (0 == fArraySize) return;
-      fArray = (T*) &(ttra[0]);
-   }
+   TVec(TTreeReaderArray<T> &ttra) : fArray(static_cast<T*>(ttra.GetAddress())), fArraySize(ttra.GetSize()) {}
    /*! \endcond */
 
    /// Construct starting from a vector
