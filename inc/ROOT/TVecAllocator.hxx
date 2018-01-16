@@ -33,18 +33,14 @@ public:
 
 private:
    using StdAllocTraits_t = std::allocator_traits<StdAlloc_t>;
-   StdAlloc_t fStdAllocator;
-   bool fIsFirstAllocation = false;
    pointer fInitialAddress = nullptr;
    size_type fInitialSize = 0;
+   bool fIsFirstAllocation = false;
+   StdAlloc_t fStdAllocator;
 
 public:
-   void SetInitialMemory(size_type n, pointer addr)
-   {
-      fInitialSize = n;
-      fInitialAddress = addr;
-      fIsFirstAllocation = true;
-   }
+   TVecAllocator(pointer p, size_type n) : fInitialAddress(p), fInitialSize(n), fIsFirstAllocation(true){};
+   TVecAllocator() = default;
 
    pointer allocate(std::size_t n)
    {

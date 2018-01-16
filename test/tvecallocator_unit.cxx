@@ -9,13 +9,11 @@ using namespace ROOT::Detail::VecOps;
 TEST(TVecAllocator, ReusePointer)
 {
    std::vector<double> vmodel{1, 2, 3};
-   TVecAllocator<double> alloc0;
-   alloc0.SetInitialMemory(vmodel.size(), vmodel.data());
+   TVecAllocator<double> alloc0(vmodel.data(), vmodel.size());
 
    EXPECT_EQ(vmodel.data(), alloc0.allocate(123));
 
-   TVecAllocator<double> alloc1;
-   alloc1.SetInitialMemory(vmodel.size(), vmodel.data());
+   TVecAllocator<double> alloc1(vmodel.data(), vmodel.size());
 
    std::vector<double, TVecAllocator<double>> v(vmodel.size(), double(), alloc1);
 
