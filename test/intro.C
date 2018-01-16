@@ -97,7 +97,7 @@ void intro()
       std::cout << "v1 - v2 = " << v1 - v2 << std::endl;
       std::cout << "(v1 - v2) / 3. = " << (v1 - v2) / 3. << std::endl;
       std::cout << "v0 + 1 + (v1 - v2) / 3. = " << v0 + 1 + (v1 - v2) / 3. << std::endl;
-      std::cout << "(v0 + 1 + (v1 - v2) / 3.) > 3  " << (v0 + 1 + (v1 - v2) / 3.) > 4 << std::endl;
+      std::cout << "(v0 + 1 + (v1 - v2) / 3.) > 4  " << ((v0 + 1 + (v1 - v2) / 3.) > 4) << std::endl;
    }
 
 //    return;
