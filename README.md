@@ -15,3 +15,5 @@ What is supported:
   
 What is still broken:
 - The binding to TTreeReaderArray<T>
+  
+https://travis-ci.org/dpiparo/VecOps.svg?branch=master
