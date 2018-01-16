@@ -188,7 +188,7 @@ public:
    template <class... Args>
    void emplace_back(Args &&... args)
    {
-      void CheckOwnership();
+      CheckOwnership();
       fVector.emplace_back(std::forward<Args>(args)...);
    }
    ///@}
