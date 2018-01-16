@@ -35,7 +35,7 @@ public:
 private:
    using StdAllocTraits_t = std::allocator_traits<StdAlloc_t>;
    StdAlloc_t fStdAllocator;
-   bool fIsFirstAllocation = true;
+   bool fIsFirstAllocation = false;
    pointer fInitialAddress = nullptr;
    size_type fInitialSize = 0;
 
@@ -44,6 +44,7 @@ public:
    {
       fInitialSize = n;
       fInitialAddress = addr;
+      fIsFirstAllocation = true;
    }
 
    pointer allocate(std::size_t n)

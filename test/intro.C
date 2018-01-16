@@ -14,7 +14,7 @@ using namespace ROOT::Experimental::VecOps;
 template <typename T>
 void Print(const TVec<T> &v)
 {
-   std::cout << cling::printValue((TVec<T> *)&v) << std::endl;
+   std::cout << "Size: " << v.size() << " " << v << std::endl;
 }
 
 void intro()
@@ -31,11 +31,6 @@ void intro()
       std::cout << "Size ctor:" << std::endl;
       TVec<int> v1(4);
       Print(v1);
-
-      std::cout << "Vector ctor:" << std::endl;
-      std::vector<double> vd{0, 1, 2, 3};
-      TVec<double> v2(vd);
-      Print(v2);
    }
 
    std::cout << "\nNow some ops" << std::endl;
@@ -102,45 +97,43 @@ void intro()
       std::cout << "v1 - v2 = " << v1 - v2 << std::endl;
       std::cout << "(v1 - v2) / 3. = " << (v1 - v2) / 3. << std::endl;
       std::cout << "v0 + 1 + (v1 - v2) / 3. = " << v0 + 1 + (v1 - v2) / 3. << std::endl;
-      // Cannot print directly... To be debugged!
-      auto res = (v0 + 1 + (v1 - v2) / 3.) > 3;
-      std::cout << "(v0 + 1 + (v1 - v2) / 3.) > 3  " << cling::printValue((TVec<int> *)&res) << std::endl;
+      std::cout << "(v0 + 1 + (v1 - v2) / 3.) > 3  " << (v0 + 1 + (v1 - v2) / 3.) > 4 << std::endl;
    }
 
-   return;
-   // The example below still has some problems
-
-   {
-      std::cout << "Now using a TTreeReaderArray to initialise, mimic what would happen in a TDF" << std::endl;
-      // Ideally: tdf.Define("pt", "sqrt(px*px + py*py)").Histo1D("pt"); or, now not possible in TDF,
-      // tdf.Histo1D("sqrt(px*px + py*py)")
-
-      if (false){
-         auto rndmVector = []() {
-            std::vector<double> v((unsigned)gRandom->Uniform(16));
-            for (auto &&e : v) {
-               e = gRandom->Gaus();
-            }
-            return v;
-         };
-         TDataFrame tdf(8);
-         tdf.Define("px", rndmVector).Define("py", rndmVector).Snapshot("t", "dataset.root");
-      }
-      auto f = TFile::Open("dataset.root");
-      TTreeReader myReader("t", f);
-      TTreeReaderArray<double> px(myReader, "px");
-      TTreeReaderArray<double> py(myReader, "py");
-
-      // So far so good. Now the serious stuff
-      TH1F h("myhisto", "The Histo", 64, 0, 2);
-      while (myReader.Next()) {
-         const TVec<double> pxv(px);
-         const TVec<double> pyv(py);
-         TVec<float> v(px.GetSize());
-         const auto ptv = pxv*v;//sqrt(pxv*pxv + pyv*pyv);
-         std::cout << ptv[0] << std::endl;
-      }
-   }
+//    return;
+//    // The example below still has some problems
+//
+//    {
+//       std::cout << "Now using a TTreeReaderArray to initialise, mimic what would happen in a TDF" << std::endl;
+//       // Ideally: tdf.Define("pt", "sqrt(px*px + py*py)").Histo1D("pt"); or, now not possible in TDF,
+//       // tdf.Histo1D("sqrt(px*px + py*py)")
+//
+//       if (false){
+//          auto rndmVector = []() {
+//             std::vector<double> v((unsigned)gRandom->Uniform(16));
+//             for (auto &&e : v) {
+//                e = gRandom->Gaus();
+//             }
+//             return v;
+//          };
+//          TDataFrame tdf(8);
+//          tdf.Define("px", rndmVector).Define("py", rndmVector).Snapshot("t", "dataset.root");
+//       }
+//       auto f = TFile::Open("dataset.root");
+//       TTreeReader myReader("t", f);
+//       TTreeReaderArray<double> px(myReader, "px");
+//       TTreeReaderArray<double> py(myReader, "py");
+//
+//       // So far so good. Now the serious stuff
+//       TH1F h("myhisto", "The Histo", 64, 0, 2);
+//       while (myReader.Next()) {
+//          const TVec<double> pxv(px);
+//          const TVec<double> pyv(py);
+//          TVec<float> v(px.GetSize());
+//          const auto ptv = pxv*v;//sqrt(pxv*pxv + pyv*pyv);
+//          std::cout << ptv[0] << std::endl;
+//       }
+//    }
 }
 
 int main() {intro();return 0;}
