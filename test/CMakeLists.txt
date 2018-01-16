@@ -13,3 +13,4 @@ function (add_google_test testname source)
 endfunction()
 
 add_google_test(vecops_unit vecops_unit.C)
+add_google_test(tvecallocator_unit tvecallocator_unit.cxx)
