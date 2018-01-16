@@ -116,16 +116,7 @@ public:
 
    template <typename V>
    TVec(const TVec<V> &v)
-   {
-      auto vData = v.data();
-      fArraySize = v.size();
-      fVector.resize(fArraySize);
-      fArray = fVector.data();
-      // This works only with pods
-      // auto dataArray = v.data();
-      // memcpy((T*)fArray, dataArray, fArraySize * sizeof(T));
-      std::copy(vData, vData + fArraySize, fVector.begin());
-   }
+      : fVector(v.fVector.begin(), v.fVector.end()), fArray(fVector.data()), fArraySize(fVector.size()) {}
 
    /// Move constructor
    TVec(TVec<T> &&v) : fVector(std::move(v.fVector)), fArray(fVector.data()), fArraySize(fVector.size())
