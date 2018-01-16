@@ -15,7 +15,7 @@
 #include <TTreeReaderArray.h>
 
 #include <numeric> // for inner_product
-#include <strstream>
+#include <sstream>
 #include <type_traits>
 #include <vector>
 
@@ -45,7 +45,7 @@ void CheckSizes(size_t s0, size_t s1, const char *opName)
 {
    if (s0 != s1) {
       std::stringstream err;
-      err << "Cannot perform operation " << opName << ". The size of the arrays differ (" << s0 << " and " << s1 << ")";
+      err << "Cannot perform operation " << opName << ". The array sizes differ (" << s0 << " and " << s1 << ")";
       throw std::runtime_error(err.str());
    }
 }
@@ -101,10 +101,11 @@ public:
    }
    /*! \endcond */
 
-   /// Construct starting from an vector
-   TVec(const std::vector<T> vec) : fVector(vec), fArray(fVector.data()), fArraySize(fVector.size()){};
+   /// Construct starting from a vector
+   TVec(const std::vector<T> &vec) : fVector(vec), fArray(fVector.data()), fArraySize(fVector.size()){};
+   TVec(std::vector<T> &&vec) : fVector(std::move(vec)), fArray(fVector.data()), fArraySize(fVector.size()){};
 
-   /// Construct from initialiser list
+   /// Construct from initializer list
    TVec(std::initializer_list<T> init) : fVector(init), fArray(fVector.data()), fArraySize(fVector.size()){};
 
    /// Construct from a size
@@ -114,6 +115,8 @@ public:
    TVec(){};
 
    /// Copy constructor. Cast of contained types is performed if needed.
+   TVec(const TVec<T> &v) : fVector(v.fVector), fArray(fVector.data()), fArraySize(fVector.size()) {}
+
    template <typename V>
    TVec(const TVec<V> &v)
    {
@@ -125,6 +128,13 @@ public:
       // auto dataArray = v.data();
       // memcpy((T*)fArray, dataArray, fArraySize * sizeof(T));
       std::copy(vData, vData + fArraySize, fVector.begin());
+   }
+
+   /// Move constructor
+   TVec(TVec<T> &&v) : fVector(std::move(v.fVector)), fArray(fVector.data()), fArraySize(fVector.size())
+   {
+      v.fArray = v.fVector.data();
+      v.fArraySize = v.fVector.size();
    }
 
    // Here all the vector methods will be added
@@ -179,7 +189,7 @@ public:
    void emplace_back(Args &&... args)
    {
       void CheckOwnership();
-      fVector.emplace_back(std::move(args...));
+      fVector.emplace_back(std::forward<Args>(args)...);
    }
    ///@}
 
