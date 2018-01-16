@@ -8,7 +8,7 @@ using namespace ROOT::Detail::VecOps;
 
 TEST(TVecAllocator, ReusePointer)
 {
-   std::vector<double> vmodel {1,2,3};
+   std::vector<double> vmodel{1, 2, 3};
    TVecAllocator<double> alloc0;
    alloc0.SetInitialMemory(vmodel.size(), vmodel.data());
 
@@ -31,10 +31,8 @@ TEST(TVecAllocator, ReusePointer)
    auto res = 0;
    try {
       v.resize(-1);
-   } catch (...)
-   {
+   } catch (...) {
       res = 1;
    }
    EXPECT_EQ(1, res);
-
 }

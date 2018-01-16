@@ -19,7 +19,7 @@ namespace ROOT {
 namespace Detail {
 namespace VecOps {
 
-template<typename T>
+template <typename T>
 class TVecAllocator // : public std::allocator<T>
 {
 public:
@@ -33,7 +33,6 @@ public:
    using difference_type = typename StdAlloc_t::difference_type;
 
 private:
-
    using StdAllocTraits_t = std::allocator_traits<StdAlloc_t>;
    StdAlloc_t fStdAllocator;
    bool fIsFirstAllocation = true;
@@ -41,28 +40,28 @@ private:
    size_type fInitialSize = 0;
 
 public:
-void SetInitialMemory( size_type n, pointer addr)
-{
-   fInitialSize = n;
-   fInitialAddress = addr;
-}
-
-pointer allocate( std::size_t n )
-{
-   if(n > std::size_t(-1) / sizeof(T)) throw std::bad_alloc();
-   if (fIsFirstAllocation) {
-      fIsFirstAllocation = false;
-      return fInitialAddress;
+   void SetInitialMemory(size_type n, pointer addr)
+   {
+      fInitialSize = n;
+      fInitialAddress = addr;
    }
-   return StdAllocTraits_t::allocate(fStdAllocator, n);
-}
 
-void deallocate( pointer p, std::size_t n )
-{
-   if (p != fInitialAddress) StdAllocTraits_t::deallocate(fStdAllocator, p, n);
-}
+   pointer allocate(std::size_t n)
+   {
+      if (n > std::size_t(-1) / sizeof(T))
+         throw std::bad_alloc();
+      if (fIsFirstAllocation) {
+         fIsFirstAllocation = false;
+         return fInitialAddress;
+      }
+      return StdAllocTraits_t::allocate(fStdAllocator, n);
+   }
 
-
+   void deallocate(pointer p, std::size_t n)
+   {
+      if (p != fInitialAddress)
+         StdAllocTraits_t::deallocate(fStdAllocator, p, n);
+   }
 };
 
 } // End NS VecOps
