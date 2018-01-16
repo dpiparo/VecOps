@@ -14,7 +14,7 @@
 #include <ROOT/TVecAllocator.hxx>
 
 #include <algorithm>
-#include <cmath> // for sqrt
+#include <cmath>   // for sqrt
 #include <numeric> // for inner_product
 #include <vector>
 
@@ -149,8 +149,7 @@ auto operator+(const TVec<T> &v0, const TVec<V> &v1) -> TVec<decltype(v0[0] + v1
 
    TVec<decltype(v0[0] + v1[0])> w;
    w.resize(v0.size());
-   std::transform(v0.begin(), v0.end(), v1.begin(),
-                  w.begin(), [](const T &t, const V &v) { return t + v; });
+   std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t + v; });
    return w;
 }
 
@@ -160,8 +159,7 @@ auto operator-(const TVec<T> &v0, const TVec<V> &v1) -> TVec<decltype(v0[0] - v1
 
    TVec<decltype(v0[0] - v1[0])> w;
    w.resize(v0.size());
-   std::transform(v0.begin(), v0.end(), v1.begin(),
-                  w.begin(), [](const T &t, const V &v) { return t - v; });
+   std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t - v; });
    return w;
 }
 
@@ -171,8 +169,7 @@ auto operator*(const TVec<T> &v0, const TVec<V> &v1) -> TVec<decltype(v0[0] - v1
 
    TVec<decltype(v0[0] * v1[0])> w;
    w.resize(v0.size());
-   std::transform(v0.begin(), v0.end(), v1.begin(),
-                  w.begin(), [](const T &t, const V &v) { return t * v; });
+   std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t * v; });
    return w;
 }
 
@@ -182,8 +179,7 @@ auto operator/(const TVec<T> &v0, const TVec<V> &v1) -> TVec<decltype(v0[0] - v1
 
    TVec<decltype(v0[0] / v1[0])> w;
    w.resize(v0.size());
-   std::transform(v0.begin(), v0.end(), v1.begin(),
-                  w.begin(), [](const T &t, const V &v) { return t / v; });
+   std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t / v; });
    return w;
 }
 
@@ -193,8 +189,7 @@ TVec<char> operator>(const TVec<T> &v0, const TVec<V> &v1)
 
    TVec<char> w;
    w.resize(v0.size());
-   std::transform(v0.begin(), v0.end(), v1.begin(),
-                  w.begin(), [](const T &t, const V &v) { return t > v; });
+   std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t > v; });
    return w;
 }
 
@@ -204,8 +199,7 @@ TVec<char> operator>=(const TVec<T> &v0, const TVec<V> &v1)
 
    TVec<char> w;
    w.resize(v0.size());
-   std::transform(v0.begin(), v0.end(), v1.begin(),
-                  w.begin(), [](const T &t, const V &v) { return t >= v; });
+   std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t >= v; });
    return w;
 }
 
@@ -215,8 +209,7 @@ TVec<char> operator<(const TVec<T> &v0, const TVec<V> &v1)
 
    TVec<char> w;
    w.resize(v0.size());
-   std::transform(v0.begin(), v0.end(), v1.begin(),
-                  w.begin(), [](const T &t, const V &v) { return t <= v; });
+   std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t <= v; });
    return w;
 }
 
@@ -226,8 +219,7 @@ TVec<char> operator==(const TVec<T> &v0, const TVec<V> &v1)
 
    TVec<char> w;
    w.resize(v0.size());
-   std::transform(v0.begin(), v0.end(), v1.begin(),
-                  w.begin(), [](const T &t, const V &v) { return t == v; });
+   std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t == v; });
    return w;
 }
 
@@ -237,22 +229,21 @@ TVec<char> operator==(const TVec<T> &v0, const TVec<V> &v1)
  *  Math functions on TVecs
 */
 ///@{
-template<typename T>
-auto sqrt(const TVec<T>& v) -> TVec<decltype(std::sqrt(v[0]))>
+template <typename T>
+auto sqrt(const TVec<T> &v) -> TVec<decltype(std::sqrt(v[0]))>
 {
    TVec<decltype(std::sqrt(v[0]))> w(v.size());
-   std::transform(v.begin(), v.end(), w.begin(), [](const T& t) { return std::sqrt(t);});
+   std::transform(v.begin(), v.end(), w.begin(), [](const T &t) { return std::sqrt(t); });
    return w;
 }
 ///@}
 
 /// Inner product
 template <typename T, typename V>
-auto Dot (const TVec<T> v0, const TVec<V> v1) -> decltype(v0[0]*v1[0])
+auto Dot(const TVec<T> v0, const TVec<V> v1) -> decltype(v0[0] * v1[0])
 {
-   return std::inner_product(v0.begin(), v0.end(), v1.begin(), decltype(v0[0]*v1[0])(0));
+   return std::inner_product(v0.begin(), v0.end(), v1.begin(), decltype(v0[0] * v1[0])(0));
 }
-
 
 template <class T>
 std::ostream &operator<<(std::ostream &os, const TVec<T> &v)

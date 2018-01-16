@@ -12,7 +12,6 @@
 #define ROOT_TVECALLOCATOR
 
 #include <iostream>
-
 #include <memory>
 
 namespace ROOT {
