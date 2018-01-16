@@ -100,40 +100,40 @@ void intro()
       std::cout << "(v0 + 1 + (v1 - v2) / 3.) > 4  " << ((v0 + 1 + (v1 - v2) / 3.) > 4) << std::endl;
    }
 
-//    return;
-//    // The example below still has some problems
-//
-//    {
-//       std::cout << "Now using a TTreeReaderArray to initialise, mimic what would happen in a TDF" << std::endl;
-//       // Ideally: tdf.Define("pt", "sqrt(px*px + py*py)").Histo1D("pt"); or, now not possible in TDF,
-//       // tdf.Histo1D("sqrt(px*px + py*py)")
-//
-//       if (false){
-//          auto rndmVector = []() {
-//             std::vector<double> v((unsigned)gRandom->Uniform(16));
-//             for (auto &&e : v) {
-//                e = gRandom->Gaus();
-//             }
-//             return v;
-//          };
-//          TDataFrame tdf(8);
-//          tdf.Define("px", rndmVector).Define("py", rndmVector).Snapshot("t", "dataset.root");
-//       }
-//       auto f = TFile::Open("dataset.root");
-//       TTreeReader myReader("t", f);
-//       TTreeReaderArray<double> px(myReader, "px");
-//       TTreeReaderArray<double> py(myReader, "py");
-//
-//       // So far so good. Now the serious stuff
-//       TH1F h("myhisto", "The Histo", 64, 0, 2);
-//       while (myReader.Next()) {
-//          const TVec<double> pxv(px);
-//          const TVec<double> pyv(py);
-//          TVec<float> v(px.GetSize());
-//          const auto ptv = pxv*v;//sqrt(pxv*pxv + pyv*pyv);
-//          std::cout << ptv[0] << std::endl;
-//       }
-//    }
+   // The example below still has some problems
+
+   {
+      std::cout << "Now using a TTreeReaderArray to initialise, mimic what would happen in a TDF" << std::endl;
+      // Ideally: tdf.Define("pt", "sqrt(px*px + py*py)").Histo1D("pt"); or, now not possible in TDF,
+      // tdf.Histo1D("sqrt(px*px + py*py)")
+
+      if (true){
+         auto rndmVector = []() {
+            std::vector<double> v((unsigned)gRandom->Uniform(16));
+            for (auto &&e : v) {
+               e = gRandom->Gaus();
+            }
+            return v;
+         };
+         TDataFrame tdf(8);
+         tdf.Define("px", rndmVector).Define("py", rndmVector).Snapshot("t", "dataset.root");
+      }
+      auto f = TFile::Open("dataset.root");
+      TTreeReader myReader("t", f);
+      TTreeReaderArray<double> px(myReader, "px");
+      TTreeReaderArray<double> py(myReader, "py");
+
+      // So far so good. Now the serious stuff
+      TH1F h("myhisto", "The Histo", 64, 0, 2);
+      while (myReader.Next()) {
+         // FIXME why all zeroes!
+         ROOT::Detail::VecOps::TVecAllocator<double> allpx((double*)px.GetAddress(), px.GetSize());
+         ROOT::Detail::VecOps::TVecAllocator<double> allpy((double*)py.GetAddress(), py.GetSize());
+         const TVec<double> pxv(px.GetSize(), double(), allpx);
+         const TVec<double> pyv(py.GetSize(), double(), allpy);
+         std::cout << pxv << std::endl;
+      }
+   }
 }
 
 int main() {intro();return 0;}
