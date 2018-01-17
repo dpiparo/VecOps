@@ -43,16 +43,21 @@ namespace VecOps {
 
 using namespace ROOT::Experimental::VecOps;
 
-template <typename T, typename V, typename F>
-TVec<typename TCallTraits<F>::ret_type> Operate(const TVec<T> &v0, const TVec<V> &v1, const char* opName, F f)
+void CheckSizes(size_t s0, size_t s1, const char *opName)
 {
-   if (v0.size() != v1.size()) {
+   if (s0 != s1) {
       std::stringstream err;
       err << "Cannot perform operation " << opName
           << ". The array sizes differ: "
-          << v0.size() << " and " << v1.size() << std::endl;
+          << s0 << " and " << s1 << std::endl;
       throw std::runtime_error(err.str());
    }
+}
+
+template <typename T, typename V, typename F>
+TVec<typename TCallTraits<F>::ret_type> Operate(const TVec<T> &v0, const TVec<V> &v1, const char* opName, F f)
+{
+   CheckSizes(v0.size(), v1.size(), opName);
    TVec<typename TCallTraits<F>::ret_type> w;
    w.resize(v0.size());
    std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), f);
@@ -309,7 +314,15 @@ MATH_FUNC(atanh)
 template <typename T, typename V>
 auto Dot(const TVec<T> v0, const TVec<V> v1) -> decltype(v0[0] * v1[0])
 {
+   ROOT::Internal::VecOps::CheckSizes(v0.size(), v1.size(), "Dot");
    return std::inner_product(v0.begin(), v0.end(), v1.begin(), decltype(v0[0] * v1[0])(0));
+}
+
+/// Sum elements
+template <typename T>
+T Sum(const TVec<T> v)
+{
+   return std::accumulate(v.begin(), v.end(), 0);
 }
 
 template <class T>
@@ -327,6 +340,25 @@ std::ostream &operator<<(std::ostream &os, const TVec<T> &v)
    }
    os << " }";
    return os;
+}
+
+template <typename T>
+TVec<T> Filter(const TVec<T> &v, bool cond)
+{
+   return cond ? v : TVec<T>();
+}
+
+template <typename T, typename V>
+TVec<T> Filter(const TVec<T> &v, const TVec<V> &conds)
+{
+   ROOT::Internal::VecOps::CheckSizes(v.size(), conds.size(), "Filter");
+   TVec<T> w;
+   auto size = v.size();
+   w.reserve(size);
+   for (size_t i = 0; i< size; i++) {
+      if (conds[i]) w.emplace_back(v[i]);
+   }
+   return w;
 }
 
 } // End of VecOps NS
