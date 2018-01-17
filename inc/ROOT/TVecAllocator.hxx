@@ -34,14 +34,15 @@ public:
 private:
    enum class EAllocType : char { kRegular, kFromExternalPointer, kNoneYet };
    using StdAllocTraits_t = std::allocator_traits<StdAlloc_t>;
-   pointer fInitialAddress = nullptr;
+   const_pointer fInitialAddress = nullptr;
    size_type fInitialSize = 0;
    EAllocType fAllocType = EAllocType::kRegular;
    StdAlloc_t fStdAllocator;
 
 public:
-   TVecAllocator(pointer p, size_type n) : fInitialAddress(p), fInitialSize(n), fAllocType(EAllocType::kNoneYet){};
+   TVecAllocator(const_pointer p, size_type n) : fInitialAddress(p), fInitialSize(n), fAllocType(EAllocType::kNoneYet){};
    TVecAllocator() = default;
+   TVecAllocator(const TVecAllocator&) = default;
 
    void construct(pointer p, const_reference val)
    {
@@ -64,7 +65,7 @@ public:
          throw std::bad_alloc();
       if (EAllocType::kNoneYet == fAllocType) {
          fAllocType = EAllocType::kFromExternalPointer;
-         return fInitialAddress;
+         return (pointer)fInitialAddress;
       }
       fAllocType = EAllocType::kRegular;
       return StdAllocTraits_t::allocate(fStdAllocator, n);
@@ -77,6 +78,7 @@ public:
    }
 
    bool operator==(const TVecAllocator<T> &other) { return fAllocType == other.fAllocType; }
+   bool operator!=(const TVecAllocator<T> &other) { return fAllocType != other.fAllocType; }
 };
 
 } // End NS VecOps
