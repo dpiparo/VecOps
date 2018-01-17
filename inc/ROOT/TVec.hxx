@@ -59,7 +59,6 @@ using TVec = std::vector<T, ROOT::Detail::VecOps::TVecAllocator<T>>;
 template <typename T, typename V>
 auto operator+(const TVec<T> &v, const V &c) -> TVec<decltype(v[0] + c)>
 {
-
    TVec<decltype(v[0] + c)> w(v.size());
    std::transform(v.begin(), v.end(), w.begin(), [&c](const T &t) { return t + c; });
    return w;
@@ -68,7 +67,6 @@ auto operator+(const TVec<T> &v, const V &c) -> TVec<decltype(v[0] + c)>
 template <typename T, typename V>
 auto operator-(const TVec<T> &v, const V &c) -> TVec<decltype(v[0] - c)>
 {
-
    TVec<decltype(v[0] - c)> w(v.size());
    std::transform(v.begin(), v.end(), w.begin(), [&c](const T &t) { return t - c; });
    return w;
@@ -77,7 +75,6 @@ auto operator-(const TVec<T> &v, const V &c) -> TVec<decltype(v[0] - c)>
 template <typename T, typename V>
 auto operator*(const TVec<T> &v, const V &c) -> TVec<decltype(v[0] * c)>
 {
-
    TVec<decltype(v[0] * c)> w(v.size());
    std::transform(v.begin(), v.end(), w.begin(), [&c](const T &t) { return t * c; });
    return w;
@@ -86,7 +83,6 @@ auto operator*(const TVec<T> &v, const V &c) -> TVec<decltype(v[0] * c)>
 template <typename T, typename V>
 auto operator/(const TVec<T> &v, const V &c) -> TVec<decltype(v[0] / c)>
 {
-
    TVec<decltype(v[0] / c)> w(v.size());
    std::transform(v.begin(), v.end(), w.begin(), [&c](const T &t) { return t / c; });
    return w;
@@ -95,7 +91,6 @@ auto operator/(const TVec<T> &v, const V &c) -> TVec<decltype(v[0] / c)>
 template <typename T, typename V>
 TVec<char> operator>(const TVec<T> &v, const V &c)
 {
-
    TVec<char> w(v.size());
    std::transform(v.begin(), v.end(), w.begin(), [&c](const T &t) { return t > c; });
    return w;
@@ -104,7 +99,6 @@ TVec<char> operator>(const TVec<T> &v, const V &c)
 template <typename T, typename V>
 TVec<char> operator>=(const TVec<T> &v, const V &c)
 {
-
    TVec<char> w(v.size());
    std::transform(v.begin(), v.end(), w.begin(), [&c](const T &t) { return t >= c; });
    return w;
@@ -113,7 +107,6 @@ TVec<char> operator>=(const TVec<T> &v, const V &c)
 template <typename T, typename V>
 TVec<char> operator<(const TVec<T> &v, const V &c)
 {
-
    TVec<char> w(v.size());
    std::transform(v.begin(), v.end(), w.begin(), [&c](const T &t) { return t < c; });
    return w;
@@ -122,7 +115,6 @@ TVec<char> operator<(const TVec<T> &v, const V &c)
 template <typename T, typename V>
 TVec<char> operator<=(const TVec<T> &v, const V &c)
 {
-
    TVec<char> w(v.size());
    std::transform(v.begin(), v.end(), w.begin(), [&c](const T &t) { return t <= c; });
    return w;
@@ -131,7 +123,6 @@ TVec<char> operator<=(const TVec<T> &v, const V &c)
 template <typename T, typename V>
 TVec<char> operator==(const TVec<T> &v, const V &c)
 {
-
    TVec<char> w(v.size());
    std::transform(v.begin(), v.end(), w.begin(), [&c](const T &t) { return t == c; });
    return w;
@@ -146,7 +137,6 @@ TVec<char> operator==(const TVec<T> &v, const V &c)
 template <typename T, typename V>
 auto operator+(const TVec<T> &v0, const TVec<V> &v1) -> TVec<decltype(v0[0] + v1[0])>
 {
-
    TVec<decltype(v0[0] + v1[0])> w;
    w.resize(v0.size());
    std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t + v; });
@@ -156,7 +146,6 @@ auto operator+(const TVec<T> &v0, const TVec<V> &v1) -> TVec<decltype(v0[0] + v1
 template <typename T, typename V>
 auto operator-(const TVec<T> &v0, const TVec<V> &v1) -> TVec<decltype(v0[0] - v1[0])>
 {
-
    TVec<decltype(v0[0] - v1[0])> w;
    w.resize(v0.size());
    std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t - v; });
@@ -166,7 +155,6 @@ auto operator-(const TVec<T> &v0, const TVec<V> &v1) -> TVec<decltype(v0[0] - v1
 template <typename T, typename V>
 auto operator*(const TVec<T> &v0, const TVec<V> &v1) -> TVec<decltype(v0[0] - v1[0])>
 {
-
    TVec<decltype(v0[0] * v1[0])> w;
    w.resize(v0.size());
    std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t * v; });
@@ -176,7 +164,6 @@ auto operator*(const TVec<T> &v0, const TVec<V> &v1) -> TVec<decltype(v0[0] - v1
 template <typename T, typename V>
 auto operator/(const TVec<T> &v0, const TVec<V> &v1) -> TVec<decltype(v0[0] - v1[0])>
 {
-
    TVec<decltype(v0[0] / v1[0])> w;
    w.resize(v0.size());
    std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t / v; });
@@ -186,7 +173,6 @@ auto operator/(const TVec<T> &v0, const TVec<V> &v1) -> TVec<decltype(v0[0] - v1
 template <typename T, typename V>
 TVec<char> operator>(const TVec<T> &v0, const TVec<V> &v1)
 {
-
    TVec<char> w;
    w.resize(v0.size());
    std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t > v; });
@@ -196,7 +182,6 @@ TVec<char> operator>(const TVec<T> &v0, const TVec<V> &v1)
 template <typename T, typename V>
 TVec<char> operator>=(const TVec<T> &v0, const TVec<V> &v1)
 {
-
    TVec<char> w;
    w.resize(v0.size());
    std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t >= v; });
@@ -206,7 +191,6 @@ TVec<char> operator>=(const TVec<T> &v0, const TVec<V> &v1)
 template <typename T, typename V>
 TVec<char> operator<(const TVec<T> &v0, const TVec<V> &v1)
 {
-
    TVec<char> w;
    w.resize(v0.size());
    std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t <= v; });
@@ -216,7 +200,6 @@ TVec<char> operator<(const TVec<T> &v0, const TVec<V> &v1)
 template <typename T, typename V>
 TVec<char> operator==(const TVec<T> &v0, const TVec<V> &v1)
 {
-
    TVec<char> w;
    w.resize(v0.size());
    std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t == v; });
