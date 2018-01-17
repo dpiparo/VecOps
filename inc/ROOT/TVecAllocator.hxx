@@ -75,6 +75,11 @@ public:
       if (p != fInitialAddress)
          StdAllocTraits_t::deallocate(fStdAllocator, p, n);
    }
+
+   bool operator==(const TVecAllocator<T>& other)
+   {
+      return fAllocType == other.fAllocType;
+   }
 };
 
 } // End NS VecOps
