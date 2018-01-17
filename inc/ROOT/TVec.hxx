@@ -20,6 +20,17 @@
 
 namespace ROOT {
 
+namespace Experimental {
+
+namespace VecOps {
+
+template <typename T>
+using TVec = std::vector<T, ROOT::Detail::VecOps::TVecAllocator<T>>;
+
+} // End of Experimental NS
+
+} // End of VecOps NS
+
 // Other helpers
 namespace Internal {
 
@@ -45,12 +56,27 @@ struct TIsChar {
 
 } // End of Internal NS
 
-namespace Experimental {
+namespace Detail {
 
 namespace VecOps {
 
-template <typename T>
-using TVec = std::vector<T, ROOT::Detail::VecOps::TVecAllocator<T>>;
+   template <typename>
+   struct TIsTVec {
+      static const bool value = false;
+   };
+
+   template <typename T>
+   struct TIsTVec<ROOT::Experimental::VecOps::TVec<T>> {
+      static const bool value = true;
+   };
+
+} // End of VecOps NS
+
+} // End of Detail NS
+
+namespace Experimental {
+
+namespace VecOps {
 
 /** @name Math Operators with scalars
  *  Math operators involving TVec
@@ -88,7 +114,7 @@ auto operator/(const TVec<T> &v, const V &c) -> TVec<decltype(v[0] / c)>
    return w;
 }
 
-template <typename T, typename V>
+template <typename T, typename V, typename D = typename std::enable_if<!ROOT::Detail::VecOps::TIsTVec<V>::value, int>::type>
 TVec<char> operator>(const TVec<T> &v, const V &c)
 {
    TVec<char> w(v.size());
@@ -96,7 +122,7 @@ TVec<char> operator>(const TVec<T> &v, const V &c)
    return w;
 }
 
-template <typename T, typename V>
+template <typename T, typename V, typename D = typename std::enable_if<!ROOT::Detail::VecOps::TIsTVec<V>::value, int>::type>
 TVec<char> operator>=(const TVec<T> &v, const V &c)
 {
    TVec<char> w(v.size());
@@ -104,7 +130,7 @@ TVec<char> operator>=(const TVec<T> &v, const V &c)
    return w;
 }
 
-template <typename T, typename V>
+template <typename T, typename V, typename D = typename std::enable_if<!ROOT::Detail::VecOps::TIsTVec<V>::value, int>::type>
 TVec<char> operator<(const TVec<T> &v, const V &c)
 {
    TVec<char> w(v.size());
@@ -112,7 +138,7 @@ TVec<char> operator<(const TVec<T> &v, const V &c)
    return w;
 }
 
-template <typename T, typename V>
+template <typename T, typename V, typename D = typename std::enable_if<!ROOT::Detail::VecOps::TIsTVec<V>::value, int>::type>
 TVec<char> operator<=(const TVec<T> &v, const V &c)
 {
    TVec<char> w(v.size());
@@ -120,11 +146,19 @@ TVec<char> operator<=(const TVec<T> &v, const V &c)
    return w;
 }
 
-template <typename T, typename V>
+template <typename T, typename V, typename D = typename std::enable_if<!ROOT::Detail::VecOps::TIsTVec<V>::value, int>::type>
 TVec<char> operator==(const TVec<T> &v, const V &c)
 {
    TVec<char> w(v.size());
    std::transform(v.begin(), v.end(), w.begin(), [&c](const T &t) { return t == c; });
+   return w;
+}
+
+template <typename T, typename V, typename D = typename std::enable_if<!ROOT::Detail::VecOps::TIsTVec<V>::value, int>::type>
+TVec<char> operator!=(const TVec<T> &v, const V &c)
+{
+   TVec<char> w(v.size());
+   std::transform(v.begin(), v.end(), w.begin(), [&c](const T &t) { return t != c; });
    return w;
 }
 
@@ -193,6 +227,15 @@ TVec<char> operator<(const TVec<T> &v0, const TVec<V> &v1)
 {
    TVec<char> w;
    w.resize(v0.size());
+   std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t < v; });
+   return w;
+}
+
+template <typename T, typename V>
+TVec<char> operator<=(const TVec<T> &v0, const TVec<V> &v1)
+{
+   TVec<char> w;
+   w.resize(v0.size());
    std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t <= v; });
    return w;
 }
@@ -204,6 +247,49 @@ TVec<char> operator==(const TVec<T> &v0, const TVec<V> &v1)
    w.resize(v0.size());
    std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t == v; });
    return w;
+}
+
+template <typename T, typename V>
+TVec<char> operator!=(const TVec<T> &v0, const TVec<V> &v1)
+{
+   TVec<char> w;
+   w.resize(v0.size());
+   std::transform(v0.begin(), v0.end(), v1.begin(), w.begin(), [](const T &t, const V &v) { return t != v; });
+   return w;
+}
+
+// Workaround for operators >&co on vectors
+template <typename T>
+TVec<char> operator>(const TVec<T> &v0, const TVec<T> &v1)
+{
+   return ROOT::Experimental::VecOps::operator><T, T>(v0, v1);
+}
+template <typename T>
+TVec<char> operator>=(const TVec<T> &v0, const TVec<T> &v1)
+{
+   return ROOT::Experimental::VecOps::operator>=<T, T>(v0, v1);
+}
+template <typename T>
+TVec<char> operator==(const TVec<T> &v0, const TVec<T> &v1)
+{
+   return ROOT::Experimental::VecOps::operator==<T, T>(v0, v1);
+}
+template <typename T>
+TVec<char> operator!=(const TVec<T> &v0, const TVec<T> &v1)
+{
+   return ROOT::Experimental::VecOps::operator!=<T, T>(v0, v1);
+}
+template <typename T>
+TVec<char> operator<=(const TVec<T> &v0, const TVec<T> &v1)
+{
+   return ROOT::Experimental::VecOps::operator<=<T, T>(v0, v1);
+}
+template <typename T>
+TVec<char> operator<(const TVec<T> &v0, const TVec<T> &v1)
+{
+   // clang-format off
+   return ROOT::Experimental::VecOps::operator< <T, T>(v0, v1);
+   // clang-format on
 }
 
 ///@}
