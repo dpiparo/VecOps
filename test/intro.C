@@ -100,26 +100,23 @@ void intro()
       std::cout << "(v0 + 1 + (v1 - v2) / 3.) > 4  " << ((v0 + 1 + (v1 - v2) / 3.) > 4) << std::endl;
    }
 
-   // The example below still has some problems
-
    {
       std::cout << "Now using a TTreeReaderArray to initialise, mimic what would happen in a TDF" << std::endl;
       // Ideally: tdf.Define("pt", "sqrt(px*px + py*py)").Histo1D("pt"); or, now not possible in TDF,
       // tdf.Histo1D("sqrt(px*px + py*py)")
 
-      if (false){
-         auto rndmVector = []() {
-            std::vector<double> v((unsigned)gRandom->Uniform(16));
-            for (auto &&e : v) {
-               e = gRandom->Gaus();
-            }
-            return v;
-         };
-         TDataFrame tdf(8);
-         tdf.Define("px", rndmVector)
-            .Define("py", rndmVector)
-            .Snapshot<std::vector<double>,std::vector<double>>("t", "dataset.root", {"px", "py"});
-      }
+      auto rndmVector = []() {
+         std::vector<double> v(8);
+         for (auto &&e : v) {
+            e = gRandom->Gaus();
+         }
+         return v;
+      };
+      TDataFrame tdf(8);
+      tdf.Define("px", rndmVector)
+         .Define("py", rndmVector)
+         .Snapshot<std::vector<double>,std::vector<double>>("t", "dataset.root", {"px", "py"});
+
       auto f = TFile::Open("dataset.root");
       TTreeReader myReader("t", f);
       TTreeReaderArray<double> px(myReader, "px");
@@ -135,6 +132,7 @@ void intro()
          const TVec<double> pxv(px.GetSize(), double(), allpx);
          const TVec<double> pyv(py.GetSize(), double(), allpy);
          std::cout << pxv << " " << pyv << std::endl;
+         std::cout << pxv*pyv << std::endl;
       }
    }
 }
