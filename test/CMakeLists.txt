@@ -2,6 +2,10 @@ add_executable(intro intro.C)
 target_link_libraries(intro VecOps ${ROOT_LIBRARIES})
 target_include_directories(intro PUBLIC ${CMAKE_SOURCE_DIR}/inc ${ROOT_INCLUDE_DIRS})
 
+add_executable(tdf tdf.C)
+target_link_libraries(tdf VecOps ${ROOT_LIBRARIES})
+target_include_directories(tdf PUBLIC ${CMAKE_SOURCE_DIR}/inc ${ROOT_INCLUDE_DIRS})
+
 function (add_google_test testname source)
 	add_executable(${testname} ${source})
 	target_link_libraries(${testname} VecOps ${ROOT_LIBRARIES} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
