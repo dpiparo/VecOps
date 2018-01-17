@@ -32,9 +32,7 @@ public:
    using difference_type = typename StdAlloc_t::difference_type;
 
 private:
-   enum class EAllocType : char {kRegular,
-                                 kFromExternalPointer,
-                                 kNoneYet};
+   enum class EAllocType : char { kRegular, kFromExternalPointer, kNoneYet };
    using StdAllocTraits_t = std::allocator_traits<StdAlloc_t>;
    pointer fInitialAddress = nullptr;
    size_type fInitialSize = 0;
@@ -45,16 +43,18 @@ public:
    TVecAllocator(pointer p, size_type n) : fInitialAddress(p), fInitialSize(n), fAllocType(EAllocType::kNoneYet){};
    TVecAllocator() = default;
 
-   void construct( pointer p, const_reference val )
+   void construct(pointer p, const_reference val)
    {
-      if (EAllocType::kFromExternalPointer == fAllocType) return;
+      if (EAllocType::kFromExternalPointer == fAllocType)
+         return;
       fStdAllocator.construct(p, val);
    }
 
-   template< class U, class... Args >
-   void construct( U* p, Args&&... args )
+   template <class U, class... Args>
+   void construct(U *p, Args &&... args)
    {
-      if (EAllocType::kFromExternalPointer == fAllocType) return;
+      if (EAllocType::kFromExternalPointer == fAllocType)
+         return;
       fStdAllocator.construct(p, args...);
    }
 
@@ -76,10 +76,7 @@ public:
          StdAllocTraits_t::deallocate(fStdAllocator, p, n);
    }
 
-   bool operator==(const TVecAllocator<T>& other)
-   {
-      return fAllocType == other.fAllocType;
-   }
+   bool operator==(const TVecAllocator<T> &other) { return fAllocType == other.fAllocType; }
 };
 
 } // End NS VecOps
