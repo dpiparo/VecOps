@@ -107,7 +107,7 @@ void intro()
       // Ideally: tdf.Define("pt", "sqrt(px*px + py*py)").Histo1D("pt"); or, now not possible in TDF,
       // tdf.Histo1D("sqrt(px*px + py*py)")
 
-      if (true){
+      if (false){
          auto rndmVector = []() {
             std::vector<double> v((unsigned)gRandom->Uniform(16));
             for (auto &&e : v) {
@@ -116,7 +116,9 @@ void intro()
             return v;
          };
          TDataFrame tdf(8);
-         tdf.Define("px", rndmVector).Define("py", rndmVector).Snapshot("t", "dataset.root");
+         tdf.Define("px", rndmVector)
+            .Define("py", rndmVector)
+            .Snapshot<std::vector<double>,std::vector<double>>("t", "dataset.root", {"px", "py"});
       }
       auto f = TFile::Open("dataset.root");
       TTreeReader myReader("t", f);
@@ -126,12 +128,13 @@ void intro()
       // So far so good. Now the serious stuff
       TH1F h("myhisto", "The Histo", 64, 0, 2);
       while (myReader.Next()) {
-         // FIXME why all zeroes!
-         ROOT::Detail::VecOps::TVecAllocator<double> allpx((double*)px.GetAddress(), px.GetSize());
-         ROOT::Detail::VecOps::TVecAllocator<double> allpy((double*)py.GetAddress(), py.GetSize());
+         auto pxpp = (double**)px.GetAddress();
+         auto pypp = (double**)py.GetAddress();
+         ROOT::Detail::VecOps::TVecAllocator<double> allpx(*pxpp, px.GetSize());
+         ROOT::Detail::VecOps::TVecAllocator<double> allpy(*pypp, py.GetSize());
          const TVec<double> pxv(px.GetSize(), double(), allpx);
          const TVec<double> pyv(py.GetSize(), double(), allpy);
-         std::cout << pxv << std::endl;
+         std::cout << pxv << " " << pyv << std::endl;
       }
    }
 }

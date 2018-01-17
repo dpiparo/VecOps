@@ -32,24 +32,41 @@ public:
    using difference_type = typename StdAlloc_t::difference_type;
 
 private:
+   enum class EAllocType : char {kRegular,
+                                 kFromExternalPointer,
+                                 kNoneYet};
    using StdAllocTraits_t = std::allocator_traits<StdAlloc_t>;
    pointer fInitialAddress = nullptr;
    size_type fInitialSize = 0;
-   bool fIsFirstAllocation = false;
+   EAllocType fAllocType = EAllocType::kRegular;
    StdAlloc_t fStdAllocator;
 
 public:
-   TVecAllocator(pointer p, size_type n) : fInitialAddress(p), fInitialSize(n), fIsFirstAllocation(true){};
+   TVecAllocator(pointer p, size_type n) : fInitialAddress(p), fInitialSize(n), fAllocType(EAllocType::kNoneYet){};
    TVecAllocator() = default;
+
+   void construct( pointer p, const_reference val )
+   {
+      if (EAllocType::kFromExternalPointer == fAllocType) return;
+      fStdAllocator.construct(p, val);
+   }
+
+   template< class U, class... Args >
+   void construct( U* p, Args&&... args )
+   {
+      if (EAllocType::kFromExternalPointer == fAllocType) return;
+      fStdAllocator.construct(p, args...);
+   }
 
    pointer allocate(std::size_t n)
    {
       if (n > std::size_t(-1) / sizeof(T))
          throw std::bad_alloc();
-      if (fIsFirstAllocation) {
-         fIsFirstAllocation = false;
+      if (EAllocType::kNoneYet == fAllocType) {
+         fAllocType = EAllocType::kFromExternalPointer;
          return fInitialAddress;
       }
+      fAllocType = EAllocType::kRegular;
       return StdAllocTraits_t::allocate(fStdAllocator, n);
    }
 
