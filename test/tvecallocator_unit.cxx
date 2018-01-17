@@ -1,10 +1,11 @@
-#include <ROOT/TVecAllocator.hxx>
+#include <ROOT/TVec.hxx>
 
 #include <gtest/gtest.h>
 
 #include <vector>
 #include <iostream>
 using namespace ROOT::Detail::VecOps;
+using namespace ROOT::Experimental::VecOps;
 
 TEST(TVecAllocator, ReusePointer)
 {
@@ -38,4 +39,39 @@ TEST(TVecAllocator, ReusePointer)
       res = 1;
    }
    EXPECT_EQ(1, res);
+}
+
+class TCopySignal
+{
+private:
+   unsigned int *fCopyCount = nullptr;
+public:
+   TCopySignal(unsigned int &copyCount) : fCopyCount(&copyCount){};
+   TCopySignal(const TCopySignal &other)
+   {
+      fCopyCount = other.fCopyCount;
+      (*fCopyCount)++;
+   }
+};
+
+TEST(TVecAllocator, NewAllocations)
+{
+   unsigned int copyCount = 0;
+   std::vector<TCopySignal> model; model.reserve(8);
+   for (int i = 0 ; i< 8; ++i)
+   {
+      model.emplace_back(copyCount);
+   }
+
+   EXPECT_EQ(0U, copyCount);
+
+   unsigned int dummy;
+   TVecAllocator<TCopySignal> alloc(model.data(), model.size());
+   TVec<TCopySignal> v(model.size(), dummy ,alloc);
+
+   EXPECT_EQ(0U, copyCount);
+   v.emplace_back(copyCount);
+   EXPECT_EQ(8U, copyCount);
+
+
 }
