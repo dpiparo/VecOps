@@ -282,13 +282,27 @@ TVec<char> operator<(const TVec<T> &v0, const TVec<T> &v1)
  *  Math functions on TVecs
 */
 ///@{
-template <typename T>
-auto sqrt(const TVec<T> &v) -> TVec<decltype(std::sqrt(v[0]))>
-{
-   TVec<decltype(std::sqrt(v[0]))> w(v.size());
-   std::transform(v.begin(), v.end(), w.begin(), [](const T &t) { return std::sqrt(t); });
-   return w;
-}
+#define MATH_FUNC(FUNCNAME)\
+template <typename T>\
+auto FUNCNAME(const TVec<T> &v) -> TVec<decltype(std::FUNCNAME(v[0]))>\
+{return ROOT::Internal::VecOps::Operate(v, [](const T& t) {return std::FUNCNAME(t);});}
+
+MATH_FUNC(sqrt)
+MATH_FUNC(log)
+MATH_FUNC(sin)
+MATH_FUNC(cos)
+MATH_FUNC(asin)
+MATH_FUNC(acos)
+MATH_FUNC(tan)
+MATH_FUNC(atan)
+MATH_FUNC(sinh)
+MATH_FUNC(cosh)
+MATH_FUNC(asinh)
+MATH_FUNC(acosh)
+MATH_FUNC(tanh)
+MATH_FUNC(atanh)
+
+
 ///@}
 
 /// Inner product

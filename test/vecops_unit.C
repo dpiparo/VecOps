@@ -151,3 +151,25 @@ TEST(VecOps, PrintOps)
    CompAndPrintTVec(v, ref+2);
 
 }
+
+TEST(VecOps, MathFuncs)
+{
+   using namespace ROOT::Experimental::VecOps;
+   TVec<double> ref {1,2,3};
+   TVec<double> ref2 {11,12,13};
+   sqrt(ref);
+   log(ref);
+   sin(ref);
+   cos(ref);
+   asin(ref);
+   acos(ref);
+   tan(ref);
+   atan(ref);
+   sinh(ref);
+   cosh(ref);
+   asinh(ref);
+   acosh(ref);
+   tanh(ref);
+   atanh(ref);
+
+}
