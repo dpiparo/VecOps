@@ -128,12 +128,11 @@ void CompAndPrintTVec(ROOT::Experimental::VecOps::TVec<T> v, V w)
    std::cout << v - w << std::endl;
    std::cout << v * w << std::endl;
    std::cout << v / w << std::endl;
-   // workaround until we manage to overload >&co for vectors
-//    std::cout << (v > w) << std::endl;
-//    std::cout << (v >= w) << std::endl;
-//    std::cout << (v == w) << std::endl;
-//    std::cout << (v <= w) << std::endl;
-//    std::cout << (v < w) << std::endl;
+   std::cout << (v > w) << std::endl;
+   std::cout << (v >= w) << std::endl;
+   std::cout << (v == w) << std::endl;
+   std::cout << (v <= w) << std::endl;
+   std::cout << (v < w) << std::endl;
 
 }
 

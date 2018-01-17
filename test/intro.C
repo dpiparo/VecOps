@@ -69,7 +69,7 @@ void intro()
       Print(res1);
 
       std::cout << "Greater than a TVec ({1,1,2,2}, note the return type, TVec<int>):" << std::endl;
-      TVec<double> v20{1, 1, 2, 2};
+      TVec<float> v20{1, 1, 2, 2};
       auto res2 = v00 > v20;
       Print(res2);
 
