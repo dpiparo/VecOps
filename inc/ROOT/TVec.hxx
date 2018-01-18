@@ -371,6 +371,7 @@ namespace cling {
 template <typename T>
 inline std::string printValue(ROOT::Experimental::VecOps::TVec<T> *tvec)
 {
+   using namespace ROOT::Experimental::VecOps;
    std::stringstream ss;
    ss << *tvec;
    return ss.str();
