@@ -11,12 +11,6 @@
 using namespace ROOT::Experimental;
 using namespace ROOT::Experimental::VecOps;
 
-template <typename T>
-void Print(const TVec<T> &v)
-{
-   std::cout << "Size: " << v.size() << " " << v << std::endl;
-}
-
 void intro()
 {
 
@@ -26,11 +20,11 @@ void intro()
    {
       std::cout << "Initialiser list ctor:" << std::endl;
       TVec<float> v0{0, 1, 2, 3};
-      Print(v0);
+      std::cout << v0 << std::endl;
 
       std::cout << "Size ctor:" << std::endl;
       TVec<int> v1(4);
-      Print(v1);
+      std::cout << v1 << std::endl;
    }
 
    std::cout << "\nNow some ops" << std::endl;
@@ -38,17 +32,17 @@ void intro()
       std::cout << "Sum with scalar (3):" << std::endl;
       TVec<float> v0{0, 1, 2, 3};
       auto res0 = v0 + 3;
-      Print(res0);
+      std::cout << res0 << std::endl;
 
       std::cout << "Division by scalar (3.):" << std::endl;
       TVec<int> v1{0, 1, 2, 3};
       auto res1 = v1 / 3.;
-      Print(res1);
+      std::cout << res1 << std::endl;
 
       std::cout << "Greater than a scalar (2, note the return type, TVec<int>):" << std::endl;
       TVec<double> v2{0, 1, 2, 3};
       auto res2 = v2 > 2.;
-      Print(res2);
+      std::cout << res2 << std::endl;
    }
 
    std::cout << "\nNow some vecops!" << std::endl;
@@ -57,21 +51,21 @@ void intro()
       TVec<float> v00{0, 1, 2, 3};
       TVec<float> v01{4, 5, 6, 7};
       auto res0 = v00 + v01;
-      Print(res0);
+      std::cout << res0 << std::endl;
 
       std::cout << "Multiplication by TVec ({4,5,6,7}):" << std::endl;
       auto res00 = v00 * v01;
-      Print(res00);
+      std::cout << res00 << std::endl;
 
       std::cout << "Division by TVec ({4,5,6,7}):" << std::endl;
       TVec<int> v10{0, 1, 2, 3};
       auto res1 = v10 / v01;
-      Print(res1);
+      std::cout << res1 << std::endl;
 
       std::cout << "Greater than a TVec ({1,1,2,2}, note the return type, TVec<int>):" << std::endl;
       TVec<float> v20{1, 1, 2, 2};
       auto res2 = v00 > v20;
-      Print(res2);
+      std::cout << res2 << std::endl;
 
       std::cout << "Dot of 2 TVecs of different type:" << std::endl;
       TVec<int> v30{0, 1, 2, 3};
