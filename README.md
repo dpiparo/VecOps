@@ -22,3 +22,6 @@ The main class of the library is ```TVec<T>```, which has the following nice pro
 Please have a look into the test directory!
 
 [![status](https://travis-ci.org/dpiparo/VecOps.svg?branch=master)](https://travis-ci.org/dpiparo/VecOps#)
+
+E. Guiraud, D. Piparo, E. Tejedor
+2018 Copyright CERN
